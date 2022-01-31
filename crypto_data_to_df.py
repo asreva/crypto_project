@@ -2,12 +2,10 @@
 @aim: Convert data (.csv) from Binance to a dataframe to use in Pandas
 Expecting data minute by minute from https://www.cryptodatadownload.com/data/binance/
 They give headers:
-unix	date	symbol	open	high	low	close	Volume BTC	Volume USDT	tradecount
+unix	date	symbol	open	high	low	close	Volume BTC	Volume USDT	trade-count
 We return a .csv with the header (date as Y-m-d H:M:S) and value at opening:
 date value
-
 @authors: Ivan-Daniel Sievering
-
 @date: 2022/01/31
 """
 
@@ -17,12 +15,12 @@ import os
 import pandas as pd
 
 # Constants
-RAW_DATA_FOLDER = "crypto_data"
-TREATED_DATA_FOLDER = "crypto_df"
+RAW_DATA_FOLDER = "crypto_data"  # name of the folder containing the raw data
+TREATED_DATA_FOLDER = "crypto_df"  # name of the folder where to save the new data
 
 # Parameters
-filename = "Binance_XRPUSDT_minute.csv"
-target_filename = "XRP_USD.csv"  # has to be crypto_money.csv
+filename = "Binance_BTCUSDT_minute.csv"  # original file
+target_filename = "BTC_USD.csv"  # name of the new file, has to be crypto_money.csv
 
 # --- Main --- #
 if __name__ == "__main__":

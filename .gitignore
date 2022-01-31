@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/.idea/
+/crypto_data/
+/crypto_df/
