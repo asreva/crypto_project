@@ -60,9 +60,22 @@ class CryptoMarket:
         @output:  price of this crypto at that moment
         """
 
-        df = self.all_df_dict[crypto_name]
-        row = df[df["date"] == date].iloc[0]  # .iloc[0] to get only the value and not the cell
-        return row["value"]
+        try:
+            df = self.all_df_dict[crypto_name]
+            row = df[df["date"] == date].iloc[0]  # .iloc[0] to get only the value and not the cell
+            return row["value"]
+        except IndexError:
+            print("{} of {} was not found in the dataframe".format(date, crypto_name))
+            sys.exit()
+
+    def get_crypto_df(self, crypto_name):
+        """
+        @aim: get the dataframe of a specific crypto for plot purposes
+        @input: - crypto_name : name of the crypto
+        @output:  the dataframe
+        """
+
+        return self.all_df_dict[crypto_name]
 
 
 # --- Main (just to test and see how it works) --- #

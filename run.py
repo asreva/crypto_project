@@ -12,31 +12,24 @@ from agents.WaitIncreaseAgent import WaitIncreaseAgent
 from CryptoSimulation import CryptoSimulation
 
 # Parameters
-init_date = pd.to_datetime("2020-05-01 22:00:00")
-end_date = pd.to_datetime("2020-06-01 23:00:00")
+init_date = pd.to_datetime("2020-05-01 22:00:00")  # start one step before
+end_date = pd.to_datetime("2020-06-01 23:00:00")  # stops one step before
+crypto_list = ["BTC"]
+frequency = 60 * 60 * 1  # in seconds
 
 # --- Main --- #
 if __name__ == "__main__":
     # Create the simulation
-    simulation = CryptoSimulation(init_date, end_date, ["BTC"])
+    simulation = CryptoSimulation(init_date, end_date, crypto_list, frequency=frequency)
 
     # Add the agents
-    sleep_agent = SleepingAgent("sleeper", ["BTC"], 100, {"BTC": 1})
-    wait_agent = WaitIncreaseAgent("waiter", ["BTC"], 100, {"BTC": 1}, "BTC", 5.0/100)
+    sleep_agent = SleepingAgent("sleeper", crypto_list, 100, {"BTC": 1.0})
+    wait_agent = WaitIncreaseAgent("waiter", crypto_list, 100, {"BTC": 1.0}, "BTC", 3 / 100)
     simulation.add_agent(sleep_agent)
     simulation.add_agent(wait_agent)
-
-    print("\nInitial state")
-    for cur_agent in simulation.agent_l.values():
-        print(cur_agent.name)
-        print(cur_agent.available_money)
-        print(cur_agent.available_crypto_l)
 
     # Run the simulation
     simulation.simulate()
 
-    print("\nFinal state")
-    for cur_agent in simulation.agent_l.values():
-        print(cur_agent.name)
-        print(cur_agent.available_money)
-        print(cur_agent.available_crypto_l)
+    # Evaluate it
+    simulation.evaluate()

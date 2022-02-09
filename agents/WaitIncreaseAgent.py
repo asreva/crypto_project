@@ -47,6 +47,8 @@ class WaitIncreaseAgent(CryptoAgent):
 
         # if it increased sell and buy again
         if perc_diff > self.sell_th:
+            if self.simulation.verbose:
+                print("Sell-Buy action by {} on {}".format(self.name, self.simulation.current_date))
             self.sell(self.available_crypto_l[self.name_of_crypto], self.name_of_crypto)
             self.buy(self.available_money, self.name_of_crypto)
             self.last_buy_price = current_price
