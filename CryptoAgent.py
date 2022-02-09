@@ -20,6 +20,7 @@ class CryptoAgent(ABC):
                 - buy : action for the agent to buy crypto
                 - sell : action for the agent to sell crypto
                 - load_init_info : to add information before launching the simulation (for example, previous values)
+                - add_state : save the state at a specific point
     @parameters:- name : name of the agent (str)
                 - available_crypto_l : dict with the qte of each crypto that the agent has
                 - available_money : money that the agent has
@@ -28,6 +29,7 @@ class CryptoAgent(ABC):
                 - init_repartition : initial repartition of the money along cryptos
                                     [0.75, 0.1] means 75% in the first crypto, 10% in the second and 15% still in money
                 - simulation : ref to the current simulation (to get prices, api, ...)
+                - state_hist : history of the states of the agent during the simulation
 
     """
 
@@ -46,11 +48,12 @@ class CryptoAgent(ABC):
         self.available_crypto_l = dict(zip(crypto_name_l, [0] * len(crypto_name_l)))
         self.available_money = init_money
         self.earned_money = 0
+        self.init_money = init_money
         self.init_repartition = init_repartition
 
         self.simulation = None
 
-        print("CryptoAgent {} ready!".format(self.name))
+        self.state_hist = []
 
     def link_to_simulation(self, simulation):
         """
@@ -89,6 +92,9 @@ class CryptoAgent(ABC):
             crypto_qte = self.simulation.api.buy_crypto_from_api(money, crypto_name)
             self.available_money -= money
             self.available_crypto_l[crypto_name] += crypto_qte
+            # Save the action
+            action_detail = "Bought: {} {} for {}".format(crypto_qte, crypto_name, money)
+            self.add_state(self.simulation.current_date, "buy", crypto_name, action_detail)
         else:
             print("Agent {} is trying to buy more than it has money.".format(self.name))
             sys.exit()
@@ -106,6 +112,9 @@ class CryptoAgent(ABC):
             money = self.simulation.api.sell_crypto_to_api(crypto_qte, crypto_name)
             self.available_crypto_l[crypto_name] -= crypto_qte
             self.available_money += money
+            # Save the action
+            action_detail = "Sell: {} {} for {}".format(crypto_qte, crypto_name, money)
+            self.add_state(self.simulation.current_date, "sell", crypto_name, action_detail)
         else:
             print("Agent {} is trying to sell more than it has {}.".format(self.name, crypto_name))
             sys.exit()
@@ -117,6 +126,34 @@ class CryptoAgent(ABC):
         """
 
         print("No specific initialisation needed.")
+
+    def add_state(self, date, action_type, action_crypto, action_detail):
+        """
+        Add a state to the record
+        :param date: date at which the event happened
+        :param action_type: what the agent did ("selL"/"buy"/"start"/"end")
+        :param action_crypto: on which crypto the action took place
+        :param action_detail: how much sold/bought
+        """
+
+        # Compute the value of the crypto at this point (call api)
+        money_from_cryptos = 0
+        for crypto_name, crypto_qte in self.available_crypto_l.items():
+            money_from_cryptos += self.simulation.api.sell_crypto_to_api(crypto_qte, crypto_name)
+
+        # Compute total value of the agent
+        total_value = self.available_money + self.earned_money + money_from_cryptos
+
+        self.state_hist.append({
+                                    "date": date,
+                                    "total_value": total_value,
+                                    "available_money": self.available_money,
+                                    "earned_money": self.earned_money,
+                                    "available_cryptos": dict(self.available_crypto_l),  # do not take the pointer
+                                    "action_type": action_type,
+                                    "action_crypto": action_crypto,
+                                    "action_detail": action_detail
+                                })
 
 
 # --- Main (just to test and see how it works) --- #
