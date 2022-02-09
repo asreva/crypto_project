@@ -99,9 +99,16 @@ class CryptoSimulation:
         # Update the date (first step skipped -> ok to init agents with first day values)
         self.current_date = self.current_date + timedelta(seconds=self.frequency)
 
-        # Execute agents steps
-        for name, agent in self.agent_l.items():
-            agent.step()
+        # Check that we have all values for this moment (may have some missing hours)
+        all_available = True
+        for crypto_name in self.crypto_name_l:
+            if not self.market.get_price(crypto_name, self.current_date):
+                all_available = False
+
+        # Execute agents steps if data available
+        if all_available:
+            for name, agent in self.agent_l.items():
+                agent.step()
 
     def simulate(self):
         """

@@ -66,7 +66,7 @@ class CryptoMarket:
             return row["value"]
         except IndexError:
             print("{} of {} was not found in the dataframe".format(date, crypto_name))
-            sys.exit()
+            return False
 
     def get_crypto_df(self, crypto_name):
         """

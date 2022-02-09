@@ -7,15 +7,23 @@
 # --- Libraries, constants and parameters --- #
 # Libraries
 import pandas as pd
+from CryptoSimulation import CryptoSimulation
 from agents.SleepingAgent import SleepingAgent
 from agents.WaitIncreaseAgent import WaitIncreaseAgent
-from CryptoSimulation import CryptoSimulation
+from agents.SlopeEstimationAgent import SlopeEstimationAgent
 
 # Parameters
-init_date = pd.to_datetime("2020-05-01 22:00:00")  # start one step before
-end_date = pd.to_datetime("2020-06-01 23:00:00")  # stops one step before
+init_date = pd.to_datetime("2020-01-01 00:00:00")  # start one step before
+end_date = pd.to_datetime("2021-01-01 00:00:00")  # stops one step before
 crypto_list = ["BTC"]
-frequency = 60 * 60 * 24  # in seconds
+frequency = 60 * 1 * 1  # in seconds
+
+# Agents
+agent_list = [
+    SleepingAgent("Sleeper", crypto_list, 100, {"BTC": 1.0}),
+    # WaitIncreaseAgent("Wait", crypto_list, 100, {"BTC": 1.0}, "BTC", 2.031 / 100),
+    SlopeEstimationAgent("Sloper", crypto_list, 100, {"BTC": 1.0}, "BTC", 2.5 / 100, -0.5 / 100, 45, 120)
+]
 
 # --- Main --- #
 if __name__ == "__main__":
@@ -23,10 +31,8 @@ if __name__ == "__main__":
     simulation = CryptoSimulation(init_date, end_date, crypto_list, frequency=frequency)
 
     # Add the agents
-    sleep_agent = SleepingAgent("sleeper", crypto_list, 100, {"BTC": 1.0, "ETH": 0.0})
-    wait_agent = WaitIncreaseAgent("waiter", crypto_list, 100, {"BTC": 1.0, "ETH": 0.0}, "BTC", 3 / 100)
-    simulation.add_agent(sleep_agent)
-    simulation.add_agent(wait_agent)
+    for agent in agent_list:
+        simulation.add_agent(agent)
 
     # Run the simulation
     simulation.simulate()
