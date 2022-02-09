@@ -15,7 +15,7 @@ from CryptoSimulation import CryptoSimulation
 init_date = pd.to_datetime("2020-05-01 22:00:00")  # start one step before
 end_date = pd.to_datetime("2020-06-01 23:00:00")  # stops one step before
 crypto_list = ["BTC"]
-frequency = 60 * 60 * 1  # in seconds
+frequency = 60 * 60 * 24  # in seconds
 
 # --- Main --- #
 if __name__ == "__main__":
@@ -23,8 +23,8 @@ if __name__ == "__main__":
     simulation = CryptoSimulation(init_date, end_date, crypto_list, frequency=frequency)
 
     # Add the agents
-    sleep_agent = SleepingAgent("sleeper", crypto_list, 100, {"BTC": 1.0})
-    wait_agent = WaitIncreaseAgent("waiter", crypto_list, 100, {"BTC": 1.0}, "BTC", 3 / 100)
+    sleep_agent = SleepingAgent("sleeper", crypto_list, 100, {"BTC": 1.0, "ETH": 0.0})
+    wait_agent = WaitIncreaseAgent("waiter", crypto_list, 100, {"BTC": 1.0, "ETH": 0.0}, "BTC", 3 / 100)
     simulation.add_agent(sleep_agent)
     simulation.add_agent(wait_agent)
 
